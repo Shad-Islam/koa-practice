@@ -1,12 +1,16 @@
-import Koa from 'koa';
+// import Koa from 'koa';
 
-const app = new Koa();
+const { createApp } = await import('./app.js');
 
-app.use(async (ctx) => {
-  ctx.body = {ok: true, message: 'Hello World from Koa.js server!'};
-});
+const app = createApp();
 
-const PORT = process.env.PORT || 3000;
+// app.use(async (ctx) => {
+//   ctx.body = {ok: true, message: 'Hello World from Koa.js server!'};
+// });
+
+
+
+const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 }); 
