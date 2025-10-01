@@ -1,0 +1,16 @@
+{
+  "name": "koa-mongo-bullmq",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Shad",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+     "start": "node src/server.js"
+  },
+  "dependencies": {
+    "koa": "^3.0.1"
+  }
+}
