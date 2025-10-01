@@ -15,6 +15,7 @@
     "@koa/router": "^14.0.0",
     "dotenv": "^17.2.3",
     "koa": "^3.0.1",
-    "koa-bodyparser": "^4.4.1"
+    "koa-bodyparser": "^4.4.1",
+    "mongoose": "^8.18.3"
   }
 }
