@@ -4,15 +4,17 @@ import bodyParser from "koa-bodyparser";
 import cors from "@koa/cors";
 
 import { errorHandlingMiddleware } from "./middlewares/error.js";
+import { env } from "./config/env.js";
 
 export function createApp() {
   const app = new Koa();
-  const router = new Router();
 
   app.use(errorHandlingMiddleware);
   app.use(cors({ origin: "*" }));
 
   app.use(bodyParser());
+
+  const router = new Router({ prefix: env.basePath });
 
   router.get("/", (ctx) => {
     ctx.body = {

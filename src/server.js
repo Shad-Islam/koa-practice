@@ -1,6 +1,8 @@
 // import Koa from 'koa';
+import "dotenv/config";
 
-const { createApp } = await import('./app.js');
+import { createApp } from "./app.js";
+import { env } from "./config/env.js";
 
 const app = createApp();
 
@@ -8,9 +10,7 @@ const app = createApp();
 //   ctx.body = {ok: true, message: 'Hello World from Koa.js server!'};
 // });
 
-
-
-const PORT = 3000;
+const PORT = env.port;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
-}); 
+});
