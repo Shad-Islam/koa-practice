@@ -11,6 +11,7 @@
     "start": "node src/server.js"
   },
   "dependencies": {
+    "@koa/cors": "^5.0.0",
     "@koa/router": "^14.0.0",
     "koa": "^3.0.1",
     "koa-bodyparser": "^4.4.1"
