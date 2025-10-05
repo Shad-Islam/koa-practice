@@ -51,7 +51,7 @@ export function createApp() {
     ctx.body = { items: users, total: users.length };
   });
 
-  router.post("/users", validate(userCreateSchema), async (ctx) => {
+  router.post("/users", validate(createUserSchema), async (ctx) => {
     const { name, email } = ctx.request.validated;
     // if (!name || !email) {
     //   const e = new Error("Name and Email are required");
