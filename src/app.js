@@ -1,11 +1,14 @@
 import Koa from "koa";
-import { z } from "zod";
+import { email, z } from "zod";
 import cors from "@koa/cors";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 import Router from "@koa/router";
 import bodyParser from "koa-bodyparser";
 
 import { env } from "./config/env.js";
 import { User } from "./models/user.model.js";
+import { authRequired } from "./middlewares/auth.js";
 import { validate } from "./middlewares/validate.js";
 import { errorHandlingMiddleware } from "./middlewares/error.js";
 
@@ -17,6 +20,33 @@ const createUserSchema = z.object({
     .email("invalid email")
     .transform((v) => v.toLowerCase()),
 });
+
+const registerSchema = z.object({
+  name: z.string().trim().min(2),
+  email: z
+    .string()
+    .trim()
+    .email()
+    .transform((v) => v.toLowerCase()),
+  password: z.string().min(6, "password must be at least 6 characters"),
+});
+
+const loginSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .email()
+    .transform((v) => v.toLowerCase()),
+  password: z.string().min(6, "password must be at least 6 characters"),
+});
+
+function signToken(user) {
+  return jwt.sign(
+    { sub: user._id.toString(), email: user.email },
+    env.jwtSecret,
+    { expiresIn: "1h" }
+  );
+}
 
 export function createApp() {
   const app = new Koa();
@@ -45,8 +75,59 @@ export function createApp() {
     ctx.body = { youSent: ctx.request.body };
   });
 
+  router.post("/auth/register", validate(registerSchema), async (ctx) => {
+    const { name, email, password } = ctx.request.validated;
+
+    // block duplicate
+    const exists = await User.findOne({ email }).lean();
+    if (exists) {
+      const e = new Error("Email already exists");
+      e.status = 409;
+      throw e;
+    }
+
+    // hash password
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    //  save user with passwordHash
+    const user = await User.create({ name, email, passwordHash });
+
+    // generate token
+    const token = signToken(user);
+
+    ctx.status = 201;
+    ctx.body = {
+      user: { id: user._id, name: user.name, email: user.email },
+      token,
+    };
+  });
+
+  router.post("/auth/login", validate(loginSchema), async (ctx) => {
+    const { email, password } = ctx.request.validated;
+
+    const user = await User.findOne({ email });
+    if (!user || !user.passwordHash) {
+      const e = new Error("Invalid credentials");
+      e.status = 401;
+      throw e;
+    }
+
+    const ok = await bcrypt.compare(password, user.passwordHash);
+    if (!ok) {
+      const e = new Error("Invalid credentials");
+      e.status = 401;
+      throw e;
+    }
+
+    const token = signToken(user);
+    ctx.body = {
+      user: { id: user._id, name: user.name, email: user.email },
+      token,
+    };
+  });
+
   // USER : List and Create
-  router.get("/users", async (ctx) => {
+  router.get("/users", authRequired(), async (ctx) => {
     const users = await User.find().lean();
     ctx.body = { items: users, total: users.length };
   });
