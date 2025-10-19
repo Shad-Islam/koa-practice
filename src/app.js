@@ -1,8 +1,9 @@
 import Koa from "koa";
-import { email, z } from "zod";
+import { z } from "zod";
 import cors from "@koa/cors";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import helmet from "koa-helmet";
 import Router from "@koa/router";
 import bodyParser from "koa-bodyparser";
 
@@ -10,6 +11,7 @@ import { env } from "./config/env.js";
 import { User } from "./models/user.model.js";
 import { authRequired } from "./middlewares/auth.js";
 import { validate } from "./middlewares/validate.js";
+import { logger } from "./middlewares/logger.js";
 import { errorHandlingMiddleware } from "./middlewares/error.js";
 
 const createUserSchema = z.object({
@@ -52,7 +54,9 @@ export function createApp() {
   const app = new Koa();
 
   app.use(errorHandlingMiddleware);
+  app.use(logger);
   app.use(cors({ origin: "*" }));
+  app.use(helmet());
   app.use(bodyParser());
 
   const router = new Router({ prefix: env.basePath });

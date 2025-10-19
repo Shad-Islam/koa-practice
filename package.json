@@ -18,6 +18,7 @@
     "jsonwebtoken": "^9.0.2",
     "koa": "^3.0.1",
     "koa-bodyparser": "^4.4.1",
+    "koa-helmet": "^8.0.1",
     "mongoose": "^8.18.3",
     "zod": "^4.1.11"
   }
