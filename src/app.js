@@ -9,6 +9,7 @@ import bodyParser from "koa-bodyparser";
 
 import { env } from "./config/env.js";
 import { User } from "./models/user.model.js";
+import { emailQueue } from "./jobs/emailQueue.js";
 import { authRequired } from "./middlewares/auth.js";
 import { validate } from "./middlewares/validate.js";
 import { logger } from "./middlewares/logger.js";
@@ -98,6 +99,9 @@ export function createApp() {
 
     // generate token
     const token = signToken(user);
+
+    emailQueue.add("sendWelcomeEmail", { email, name });
+
 
     ctx.status = 201;
     ctx.body = {
