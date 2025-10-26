@@ -100,8 +100,20 @@ export function createApp() {
     // generate token
     const token = signToken(user);
 
-    emailQueue.add("sendWelcomeEmail", { email, name });
-
+    emailQueue.add(
+      "sendWelcomeEmail",
+      { email, name },
+      { delay: 10000 },
+      {
+        attempts: 3,
+        backoff: {
+          type: "exponential",
+          delay: 5000,
+        },
+        removeOnComplete: true,
+        removeOnFail: false,
+      }
+    );
 
     ctx.status = 201;
     ctx.body = {
