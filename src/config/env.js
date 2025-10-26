@@ -3,5 +3,5 @@ export const env = {
   basePath: process.env.BASE_PATH || "/api",
   jwtSecret: process.env.JWT_SECRET,
   redisPort: process.env.REDIS_PORT || 6379,
-  redisHost: process.env.REDIS_HOST || "127.0.0.1",
+  redisHost: process.env.REDIS_HOST,
 };

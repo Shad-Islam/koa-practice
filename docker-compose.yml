@@ -1,0 +1,37 @@
+version: '3.9'
+
+services:
+  api:
+    build: .
+    container_name: koa-api
+    ports:
+      - "3000:3000"
+    environment:
+      - .env
+    depends_on:
+      - mongo
+      - redis
+
+    volumes:
+      - .:/usr/src/app
+    command: npm start 
+
+  mongo:
+    image: mongo:6
+    container_name: mongo-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  redis:
+    image: redis:7
+    container_name: redis-srv
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+volumes:
+  mongo-data:
+  redis-data:
