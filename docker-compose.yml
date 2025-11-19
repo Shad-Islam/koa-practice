@@ -6,7 +6,7 @@ services:
     container_name: koa-api
     ports:
       - "3000:3000"
-    environment:
+    env_file:
       - .env
     depends_on:
       - mongo
@@ -15,6 +15,32 @@ services:
     volumes:
       - .:/usr/src/app
     command: npm start 
+
+  welcome_email_worker:
+    build: .
+    container_name: welcome-email-worker
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+      - redis
+
+    volumes:
+      - .:/usr/src/app
+    command: node src/jobs/emailWorker.js
+
+  daily_email_worker:
+    build: .
+    container_name: daily-email-worker
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+      - redis
+
+    volumes:
+      - .:/usr/src/app
+    command: node src/jobs/dailyEmailWorker.js
 
   mongo:
     image: mongo:6
